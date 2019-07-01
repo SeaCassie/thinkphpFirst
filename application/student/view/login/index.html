@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="/static/js/jquery-3.4.1.js"></script>
+
+    <style>
+        h2{
+            padding: 50px 0 0 0;
+            width: 400px;
+            margin: 0 auto;
+        }
+        table{
+            width: 80%;
+
+        }
+        tr>td{
+            width: 20%;
+            text-align: center;
+            /*line-height: 2;*/
+            vertical-align: middle!important;
+        }
+
+        div{
+            width: 80%;
+            margin: 50px auto;
+        }
+        .form-horizontal>input{
+            margin-bottom: 20px;
+        }
+    </style>
+    <script src="/static/js/jquery.validate.min.js"></script>
+    <script src="/static/js/messages_zh.js"></script>
+
+</head>
+<body>
+    <h2>学生信息查询系统</h2>
+    <div>
+
+
+    <table class="table table-bordered">
+        <thead>
+
+
+        <tr>
+            <td>姓名</td>
+            <td>性别</td>
+            <td>年龄</td>
+            <td>方向</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+
+    </table>
+<!--        弹出框设置-->
+        <!-- Button trigger modal -->
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+            添加信息
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-body">
+                            <form class="form-horizontal addform" id="stuForm">
+                            <input type="text" class="form-control" id="names"  name="names" placeholder="请输入姓名">
+                            <input type="radio"  name="sex" value="男" checked > 男
+                            <input type="radio"  name="sex" value="女"> 女
+                            <input type="text" class="form-control" id="age" name="age" placeholder="请输入年龄">
+                            <input type="text" class="form-control" id="major" name="major" placeholder="请输入方向">
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary addconf">确定</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+<!--        修改界面-->
+        <div class="modal fade" id="_myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-body">
+                        <form class="form-horizontal " id="_stuForm">
+                            <input type="text" class="form-control" id="_inputname"  name="names" placeholder="请输入姓名">
+                            <input type="radio" id="man" name="sex" value="男" checked> 男
+                            <input type="radio" id="woman" name="sex" value="女"> 女
+                            <input type="text"  id="_age" class="form-control" name="age" placeholder="请输入年龄">
+                            <input type="text"  id="_major" class="form-control" name="major" placeholder="请输入方向">
+                    
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary updateform" >修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <script src="/static/js/bootstrap.min.js"></script>
+
+        <script>
+           window.onload=function(){
+    //获取指定数据
+            function render(){
+
+
+               $.ajax({
+                    url:"{:url('student/student/select')}",
+                    dataType:"json",
+                    success:function (r) {
+                        if (r.code==200){
+                            let str="";
+                            r.data.forEach(elem=>{
+
+                                str +=`<tr id="${elem.id}">
+
+                                <td>${elem.names}</td>
+                                <td>${elem.sex}</td>
+                                <td>${elem.age}</td>
+                                <td>${elem.major}</td>
+                                <td><button class="btn btn-success  del">删除</button> <button class="btn btn-danger update">修改</button></td>
+                            </tr>`
+
+                            })
+
+                            $("tbody").html(str);
+                        }
+                        // console.log(r)
+                    }
+                })
+
+            }
+            render();
+
+    //进行删除功能
+           $("tbody").on("click",".del",function () {
+               if (confirm("确定要进行删除？？")) {
+                   // console.log($(this).closest("tr").attr("id"));
+                   let id=$(this).closest("tr").attr("id");
+                   $.ajax({
+                       url:"{:url('student/student/delete')}",
+                       dataType:"json",
+                       data:{id},
+                       success:function (r) {
+
+                            if (r.code==200){
+                                alert(r.msg);
+
+                                $("#"+id).remove();
+                            } else{
+                                alert("删除失败")
+                            }
+                       }
+                   })
+               }
+
+           })
+
+
+
+               //进行增加
+               $(".addconf").on("click",function () {
+                        if ($("#stuForm").valid()){
+
+                            let conf=$(".addform").serializeArray();
+
+
+                            $.ajax({
+                                url:"{:url('student/student/add')}",
+                                dataType:"json",
+                                data:conf,
+                                success:function (r) {
+                                    if (r.code==200){
+                                        $("#myModal").modal('hide');
+
+                                        alert(r.msg);
+                                        render();
+                                        $("#stuForm")[0].reset();
+
+                                    }
+                                }
+                            })
+
+                        }
+
+
+               })
+
+            //进行校验
+               $('#stuForm').validate({
+                   rules: {
+                        names:{
+                          required:true
+                        },
+                       sex: {
+                           required: true
+                       },
+                       age: {
+                           required: true,
+                           range: [5,30]
+                       },
+                       major: {
+                           required: true
+                       }
+                   } ,
+                   message: {
+                       names:{
+                         required:'请输入姓名'
+                       },
+                       sex: {
+                           required: '请输入性别'
+                       },
+                       age: {
+                           required: '请输入年龄',
+                           range: '年龄应当在5~30之间'
+                       },
+                       major: {
+                           required: '请输入专业'
+                       }
+
+                   }
+               });
+               $('#_stuForm').validate({
+                   rules: {
+                       _names: {
+                           required: true
+                       } ,
+                       _sex: {
+                           required: true
+                       },
+                       _age: {
+                           required: true,
+                           range: [5,30]
+                       },
+                       _major: {
+                           required: true
+                       }
+                   } ,
+                   message: {
+                       _name: {
+                           required: '请输入姓名'
+                       } ,
+                       _sex: {
+                           required: '请输入性别'
+                       },
+                       _age: {
+                           required: '请输入年龄',
+                           range: '年龄应当在5~30之间'
+                       },
+                       _major: {
+                           required: '请输入专业'
+                       }
+
+                   }
+               });
+               //进行修改
+            $("tbody").on("click",".update",function () {
+                console.log(111);
+                $("#_myModal").modal("show");
+                let id=$(this).closest("tr").attr("id");
+                $.ajax({
+                    url:"{:url('student/student/selectone')}",
+                    dataType:"json",
+                    data:{id},
+                    success:function (r) {
+                        console.log(r);
+                        if (r.code==200){
+                            $("#_inputname").val(r.data.names);
+                            if (r.data.sex==="男"){
+                                $("#man").attr('checked','checked')
+                            }else{
+                                $("#woman").attr('checked','checked')
+                            }
+                            $("#_age").val(r.data.age);
+                            $("#_major").val(r.data.major);
+                            $('.updateform').attr("id",id);
+                        }
+                    }
+
+                })
+
+            })
+               $('.updateform').on("click",function () {
+
+
+                   let id=this.id;
+                   // console.log(id);
+                   let arr=$("#_stuForm").serializeArray();
+                   // console.log(arr);
+                   arr.push({name:'id',value:id})
+                   console.log(arr);
+                   $.ajax({
+                       url:"{:url('student/student/update')}",
+                       dataType:"json",
+                       data:arr,
+                       success:function (r) {
+                           if (r.code==200){
+                               $("#_myModal").modal('hide');
+
+                               alert(r.msg);
+                               render();
+                           }else {
+                               $("#_myModal").modal('hide');
+                               alert(r.msg);
+                               render();
+                           }
+                       }
+                   })
+               })
+
+
+           }
+        </script>
+</body>
+</html>

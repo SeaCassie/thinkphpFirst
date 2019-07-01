@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{$title}</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+    <script src="/static/js/jquery-3.4.1.js"></script>
+<!--    <script src="/static/js/login.js"></script>-->
+
+</head>
+<body>
+    <form action="{:url('student/student/checklogin')}" method="post">
+        <div class="main">
+            <h2>登录页面||<a href="zuce.html">点击注册</a></h2>
+            <div>
+                <div><input type="text" placeholder="username" onfocus="this.placeholder=''"  onblur="this.placeholder='username'" name="username" required> </div>
+                <div><input type="password" placeholder="password" onfocus="this.placeholder=''" onblur="this.placeholder='password'" name="password" required></div>
+                <div><input type="submit" value="登录"></div>
+                <div><input type="reset" value="重置" ></div>
+    <!--            <div><input type="reset" value="注册" ></div>-->
+            </div>
+
+        </div>
+    </form>
+</body>
+</html>

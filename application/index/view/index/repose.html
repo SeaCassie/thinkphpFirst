@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+        let xml=new XMLHttpRequest();
+        xml.open("get","../../controller/index.php");
+        xml.send();
+        xml.onload=function () {
+
+            console.log(xml.response);
+        }
+
+
+
+</script>
+</body>
+</html>
